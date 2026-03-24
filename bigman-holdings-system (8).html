@@ -341,6 +341,69 @@ document.querySelectorAll('.mo').forEach(m=>{m.addEventListener('click',function
 function init(){ loadDB(); tickClock(); }
 init(); 
 
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bigman Holdings Ltd — Enterprise System</title>
+<style>
+/* [Exact same CSS as your original - omitted for brevity, copy from your file] */
+</style>
+</head>
+<body>
+
+<!-- [Exact same HTML structure as your original - login, app, modals, etc.] -->
+
+<script>
+// [Your original JS up to initDef() unchanged]
+
+// ENHANCED loadDB WITH FORCE RESET BUTTON SUPPORT
+function loadDB(){
+  try{
+    const s=localStorage.getItem('bh_v3');
+    if(s){
+      const parsed=JSON.parse(s);
+      if(parsed && parsed.emp && parsed.emp.length > 0 && parsed.emp.find(e => e.name.includes('Sebastian'))) {
+          DB = parsed;
+      } else {
+          console.log("Corrupt/empty data - resetting");
+          initDef(); saveDB();
+      }
+    } else {
+      initDef(); saveDB();
+    }
+  } catch(e){
+    console.error("Parse error:", e);
+    initDef(); saveDB();
+  }
+}
+
+// ADD FORCE RESET FUNCTION
+function forceResetDB(){
+  if(confirm('Reset ALL data to defaults? Sebastian/1234 will work.')){
+    localStorage.clear();
+    initDef();
+    saveDB();
+    toast('Database reset! Try login now.', 'success');
+    location.reload();
+  }
+}
+
+// In login screen HTML, add this button after quick logins:
+</script>
+<!-- ADD THIS BUTTON IN lbox AFTER quick logins div: -->
+<div style="margin-top:15px">
+  <button class="lg-btn" style="background:var(--red);font-size:14px" onclick="forceResetDB()">🔄 Force Reset DB</button>
+</div>
+
+<!-- Rest of your script unchanged -->
+// In doLoginNew(), add console.log for debug:
+console.log('Login attempt:', nameVal, pinVal, DB.emp.map(e=>e.name));
+
+// init() unchanged
+
+
 </script>
 </body>
 </html>
