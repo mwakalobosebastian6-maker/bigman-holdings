@@ -1209,8 +1209,141 @@ function renderReTab(){
 }
 function openAddPropModal(){ePropId=null;propPhotos=[];document.getElementById
     </script>
-</body>
-</html>
+const staffDatabase = {
+    "Sebastian Mwakalobo": { 
+        pin: "1234", 
+        role: "CEO", 
+        color: "var(--gold)",
+        access: ["dashboard", "construction", "realestate", "motors", "electronics", "it", "employees", "accounts", "settings"] 
+    },
+    "Amina Rajabu": { 
+        pin: "2222", 
+        role: "RE Manager", 
+        color: "var(--teal)",
+        access: ["dashboard", "realestate", "accounts"] 
+    },
+    "Hassan Mwamba": { 
+        pin: "3333", 
+        role: "Project Manager", 
+        color: "var(--orange)",
+        access: ["dashboard", "construction"] 
+    },
+    "Grace Kimani": { 
+        pin: "4444", 
+        role: "Inventory Lead", 
+        color: "var(--purple)",
+        access: ["dashboard", "electronics"] 
+    },
+    "Peter Mushi": { 
+        pin: "5555", 
+        role: "Sales Lead", 
+        color: "var(--blue)",
+        access: ["dashboard", "motors"] 
+    },
+    "Fatuma Ally": { 
+        pin: "6666", 
+        role: "IT Specialist", 
+        color: "var(--green)",
+        access: ["dashboard", "it"] 
+    },
+    "Joseph Cashier": { 
+        pin: "7777", 
+        role: "Cashier", 
+        color: "var(--gold)",
+        access: ["dashboard", "electronics"] 
+    },
+    "Mary Bookkeeper": { 
+        pin: "8888", 
+        role: "Accountant", 
+        color: "var(--gold)",
+        access: ["dashboard", "accounts"] 
+    }
+};
+  function doLoginNew() {
+    const nameInput = document.getElementById('login-name').value.trim();
+    const pinInput = document.getElementById('login-pin').value.trim();
+    const errorMsg = document.getElementById('lerr');
+
+    // Find the user in our database
+    const user = staffDatabase[nameInput];
+
+    if (user && user.pin === pinInput) {
+        // SUCCESS: Clear error and initialize
+        errorMsg.innerText = "";
+        launchSystem(nameInput, user);
+    } else {
+        // FAIL
+        errorMsg.innerText = "❌ Access Denied: Incorrect Name or PIN";
+        errorMsg.style.color = "var(--red)";
+        
+        // Visual feedback
+        document.getElementById('login-pin').style.borderColor = "var(--red)";
+        setTimeout(() => {
+            document.getElementById('login-pin').style.borderColor = "var(--border)";
+        }, 2000);
+    }
+}
+
+function launchSystem(userName, userData) {
+    // 1. Hide Login, Show App
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+
+    // 2. Update Profile Info in Topbar
+    document.getElementById('tb-nm').innerText = userName;
+    document.getElementById('tb-rl').innerText = userData.role;
+    document.getElementById('tb-av').innerText = userName.charAt(0);
+    document.getElementById('tb-av').style.background = userData.color;
+
+    // 3. Build the Dynamic Navigation Bar
+    const navContainer = document.getElementById('tb-nav');
+    navContainer.innerHTML = ""; // Clear existing
+
+    userData.access.forEach(module => {
+        const btn = document.createElement('button');
+        btn.className = 'tn';
+        btn.id = `nav-${module}`;
+        // Map icons or dots to names
+        btn.innerHTML = `<span class="ni">◈</span> ${module.charAt(0).toUpperCase() + module.slice(1)}`;
+        
+        btn.onclick = () => switchScreen(`s-${module}`);
+        navContainer.appendChild(btn);
+    });
+
+    // 4. Set default view
+    switchScreen('s-dashboard');
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+function switchScreen(screenId) {
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Deactivate all nav buttons
+    document.querySelectorAll('.tn').forEach(b => b.classList.remove('active'));
+
+    // Show selected screen
+    const target = document.getElementById(screenId);
+    if (target) {
+        target.classList.add('active');
+        // Highlight the button
+        const navBtnId = `nav-${screenId.split('-')[1]}`;
+        if(document.getElementById(navBtnId)) {
+            document.getElementById(navBtnId).classList.add('active');
+        }
+    }
+}
+
+function updateClock() {
+    const now = new Date();
+    document.getElementById('tb-clk').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+}
+  function quickFill(name, pin) {
+    document.getElementById('login-name').value = name;
+    document.getElementById('login-pin').value = pin;
+    // Optional: Automatically trigger login after fill
+    doLoginNew();
+}
 
 </body>
 </html>
